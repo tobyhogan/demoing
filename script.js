@@ -9,6 +9,12 @@ const radius = 150;
 // Y positions for markers (0.197 to 1, where 0.197 is bottom and 1 is top)
 const markerYPositions = [0.197, 0.299, 0.4, 0.5, 0.599, 0.7, 0.8, 0.9, 1];
 
+
+const element = document.getElementById('markerYValueData');
+element.textContent = markerYPositions;
+
+
+
 const blue1 = "#6666ff"
 const blue2 = "#8888ff"
 const blue3 = "#aaaaff"

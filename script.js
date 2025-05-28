@@ -7,6 +7,8 @@ const centerY = canvas.height / 2;
 const radius = 150;
 
 // Y positions for markers (0.197 to 1, where 0.197 is bottom and 1 is top)
+//const markerYPositions = [0.197, 0.299, 0.4, 0.5, 0.599, 0.7, 0.8, 0.9, 1];
+
 const markerYPositions = [0.197, 0.299, 0.4, 0.5, 0.599, 0.7, 0.8, 0.9, 1];
 
 
@@ -24,7 +26,7 @@ const yellow3 = "#ffffcc"
 
 // Colors for sectors between adjacent markers
 const sectorColors = [
-    yellow3, yellow1, 'yellow', 'orange', 
+    yellow1, yellow1, 'yellow', 'orange', 
     'yellow', yellow1, yellow2, 'yellow3',
     blue2, blue1, 'blue', 'green', 
     'blue', blue1, blue2, blue3

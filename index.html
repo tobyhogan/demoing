@@ -9,25 +9,26 @@
 <body>
     <div class="container">
         <h1>Circle with Y-Position Markers</h1>
-        <canvas id="circleCanvas" width="500" height="400"></canvas>
+        <div class="canvas-wrapper">
+            <div class="canvas-container">
+                <h2>Canvas 1</h2>
+                <canvas id="circleCanvas1" width="500" height="400"></canvas>
+                <div id="div1">
+                    <p class="w-min">Marker Y-Values:</p>
+                    <div class="w-min" id="markerYValueData1"></div>
+                </div>
+            </div>
+            <div class="canvas-container">
+                <h2>Canvas 2</h2>
+                <canvas id="circleCanvas2" width="500" height="400"></canvas>
+                <div id="div2">
+                    <p class="w-min">Marker Y-Values:</p>
+                    <div class="w-min" id="markerYValueData2"></div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div id="div1">
-      <p class="w-min">Marker Y-Values:</p>
-      <div class="w-min" id="markerYValueData"></div>
-    </div>
-
-    
     
     <script src="script.js"></script>
   </body>
   </html>
-
-<!---
-  <div id="div2">
-    <p class="w-min">Marker Y-Values:</p>
-    <div class="w-min" id="markerYValueData"></div>
-  </div>
-
-
--->

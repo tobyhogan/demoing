@@ -26,10 +26,10 @@ const yellow3 = "#ffffcc"
 
 // Colors for sectors between adjacent markers
 const sectorColors = [
-    yellow1, yellow1, 'yellow', 'orange', 
-    'yellow', yellow1, yellow2, 'yellow3',
-    blue2, blue1, 'blue', 'green', 
-    'blue', blue1, blue2, blue3
+    yellow2, yellow1, yellow2, yellow2, 
+    yellow3, blue3, blue2, blue2,
+    blue1, blue2, blue1, blue2, 
+    blue2, blue3, yellow3, yellow2
 ];
 
 function drawCircle() {
@@ -156,21 +156,34 @@ function drawSectors() {
         allAngles.push(rightAngle);
     });
     
-    // Sort angles to get them in order around the circle
+    // Sort angles and adjust to start from the top (negative PI/2)
     allAngles.sort((a, b) => a - b);
     
-    // Draw sectors between consecutive angles
-    // Create a rainbow/spectrum pattern going clockwise
+    // Find the index of the angle closest to the top of the circle (-PI/2)
+    const topAngle = -Math.PI / 2;
+    let startIndex = 0;
+    let minDiff = Math.abs(allAngles[0] - topAngle);
+    
+    for (let i = 1; i < allAngles.length; i++) {
+        const diff = Math.abs(allAngles[i] - topAngle);
+        if (diff < minDiff) {
+            minDiff = diff;
+            startIndex = i;
+        }
+    }
+    
+    // Draw sectors between consecutive angles, starting from the top
     const totalSectors = allAngles.length;
     
     for (let i = 0; i < totalSectors; i++) {
-        const nextIndex = (i + 1) % totalSectors;
+        const currentIndex = (startIndex + i) % totalSectors;
+        const nextIndex = (startIndex + i + 1) % totalSectors;
         
-        // Use a consistent pattern around the circle
-        // This creates a rainbow-like pattern that repeats twice around the circle
-        const colorIndex = Math.floor(i * sectorColors.length / totalSectors);
+        // Use colors in order directly from the sectorColors array
+        // This creates a clockwise pattern starting from the top
+        const colorIndex = i % sectorColors.length;
         
-        drawSector(allAngles[i], allAngles[nextIndex], sectorColors[colorIndex]);
+        drawSector(allAngles[currentIndex], allAngles[nextIndex], sectorColors[colorIndex]);
     }
 }
 

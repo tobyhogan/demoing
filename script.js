@@ -1,6 +1,6 @@
 // Canvas class to handle all drawing and functionality for each canvas
 class CircleCanvas {
-    constructor(canvasId, dataElementId, colors) {
+    constructor(canvasId, dataElementId, colors, markerYPositions) {
         this.canvas = document.getElementById(canvasId);
         this.ctx = this.canvas.getContext('2d');
         this.dataElement = document.getElementById(dataElementId);
@@ -11,7 +11,8 @@ class CircleCanvas {
         this.radius = 150;
         
         // Y positions for markers (0.197 to 1, where 0.197 is bottom and 1 is top)
-        this.markerYPositions = [0.197, 0.299, 0.4, 0.5, 0.599, 0.7, 0.8, 0.9, 1];
+        // Use provided positions or default if not provided
+        this.markerYPositions = markerYPositions;
         this.dataElement.textContent = this.markerYPositions;
         
         // Colors for sectors between adjacent markers
@@ -236,9 +237,17 @@ const canvas2Colors = [
     green2, green3, red3, red2
 ];
 
-// Create the two canvas instances
-const canvas1 = new CircleCanvas('circleCanvas1', 'markerYValueData1', canvas1Colors);
-const canvas2 = new CircleCanvas('circleCanvas2', 'markerYValueData2', canvas2Colors);
+// Define different marker positions for each canvas
+const canvas1v2MarkerPositions = [0.197, 0.4, 0.599, 0.8, 1];
+const canvas1MarkerPositions = [0.197, 0.299, 0.4, 0.5, 0.599, 0.7, 0.8, 0.9, 1];
+const canvas2MarkerPositions = [0.197, 0.25, 0.299, 0.35, 0.4, 0.45, 0.5, 0.55, 0.599, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1];
+const canvas3MarkerPositions = [0.197, 0.25, 0.299, 0.35, 0.4, 0.45, 0.5, 0.55, 0.599, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1];
+
+// Create the two canvas instances with different marker positions
+const canvas1v2 = new CircleCanvas('circleCanvas1v2', 'markerYValueData1', canvas1Colors, canvas1v2MarkerPositions);
+const canvas1 = new CircleCanvas('circleCanvas1', 'markerYValueData1', canvas1Colors, canvas1MarkerPositions);
+const canvas2 = new CircleCanvas('circleCanvas2', 'markerYValueData2', canvas2Colors, canvas2MarkerPositions);
+const canvas3 = new CircleCanvas('circleCanvas3', 'markerYValueData2', canvas2Colors, canvas2MarkerPositions);
 
 // Example of how to update a specific canvas
 // To be used for future functionality:

@@ -41,10 +41,10 @@ function getColorFromAngle(angle) {
     // Define the color stops
     const colorStops = [
         { pos: 0, r: 255, g: 255, b: 0 },     // Bright yellow (top and bottom)
-        { pos: 0.44, r: 255, g: 255, b: 200 }, // Light yellow/cream (transition)
+        { pos: 0.48, r: 255, g: 255, b: 200 }, // Light yellow/cream (transition)
         { pos: 0.5, r: 255, g: 240, b: 200 }, // Light yellow/cream (transition)
         { pos: 0.7, r: 120, g: 120, b: 255 }, // Light blue (transition)
-        { pos: 0.95, r: 50, g: 50, b: 140 }      // Dark blue (sides)
+        { pos: 0.9, r: 90, g: 90, b: 2000 }      // Dark blue (sides)
     ];
     
     // Find the two color stops we're between

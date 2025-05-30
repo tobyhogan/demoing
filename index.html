@@ -3,48 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Circle with Markers</title>
-    <link rel="stylesheet" href="style.css">
-  </head>
-  <body>
-    <div class="container">
-      <h1>Circle with Y-Position Markers</h1>
-      <div class="canvas-wrapper">
-        <div class="canvas-container">
-            <h2>Canvas 1v2</h2>
-            <canvas id="circleCanvas1v2" width="500" height="400"></canvas>
-            <div id="div2">
-                <p class="w-min">Marker Y-Values:</p>
-                <div class="w-min" id="markerYValueData2"></div>
-            </div>
-            <div class="canvas-container">
-                <h2>Canvas 1</h2>
-                <canvas id="circleCanvas1" width="500" height="400"></canvas>
-                <div id="div1">
-                    <p class="w-min">Marker Y-Values:</p>
-                    <div class="w-min" id="markerYValueData1"></div>
-                </div>
-            </div>
-            <div class="canvas-container">
-                <h2>Canvas 2</h2>
-                <canvas id="circleCanvas2" width="500" height="400"></canvas>
-                <div id="div2">
-                    <p class="w-min">Marker Y-Values:</p>
-                    <div class="w-min" id="markerYValueData2"></div>
-                </div>
-            </div>
-            <div class="canvas-container">
-                <h2>Canvas 3</h2>
-                <canvas id="circleCanvas3" width="500" height="400"></canvas>
-                <div id="div2">
-                    <p class="w-min">Marker Y-Values:</p>
-                    <div class="w-min" id="markerYValueData2"></div>
-                </div>
-            </div>
-            </div>
-        </div>
-    </div>
-    
+    <title>Circle with Radial Gradient</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas" width="500" height="500"></canvas>
     <script src="script.js"></script>
-  </body>
-  </html>
+</body>
+</html>

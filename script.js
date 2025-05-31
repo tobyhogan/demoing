@@ -1,6 +1,6 @@
 // Canvas class to handle all drawing and functionality for each canvas
 class CircleCanvas {
-    constructor(canvasId, dataElementId, colors, markerYPositions) {
+    constructor(canvasId, dataElementId, sectorColors, oneSideSectorNum, sectorCount = 8) {
         this.canvas = document.getElementById(canvasId);
         this.ctx = this.canvas.getContext('2d');
         this.dataElement = document.getElementById(dataElementId);
@@ -12,11 +12,12 @@ class CircleCanvas {
         
         // Y positions for markers (0.197 to 1, where 0.197 is bottom and 1 is top)
         // Use provided positions or default if not provided
-        this.markerYPositions = markerYPositions;
-        this.dataElement.textContent = this.markerYPositions;
+        this.oneSideSectorNum = oneSideSectorNum;
+        this.dataElement.textContent = this.oneSideSectorNum;
         
-        // Colors for sectors between adjacent markers
-        this.sectorColors = colors;
+        // Number of sectors on each side and colors (array of 5 colors)
+        this.sectorCount = sectorCount;
+        this.sectorColors = sectorColors;
         
         // Initial draw
         this.draw();
@@ -59,7 +60,7 @@ class CircleCanvas {
     }
     
     drawMarkers() {
-        this.markerYPositions.forEach((yPos, index) => {
+        this.oneSideSectorNum.forEach((yPos, index) => {
             const positions = this.calculateMarkerPosition(yPos);
             
             // Draw markers on both sides of the circle
@@ -129,50 +130,22 @@ class CircleCanvas {
     }
     
     drawSectors() {
-        // Calculate all marker angles around the circle
-        const allAngles = [];
+        // Calculate the angle for each sector
+        const fullCircle = 2 * Math.PI;
+        const sectorAngle = fullCircle / (this.sectorCount * 2); // Total sectors * 2 for mirroring
         
-        this.markerYPositions.forEach(yPos => {
-            const normalizedRange = (yPos - 0.197) / (1 - 0.197);
-            const actualY = this.centerY + this.radius - (normalizedRange * 2 * this.radius);
-            const yFromCenter = actualY - this.centerY;
-            const xFromCenter = Math.sqrt(this.radius * this.radius - yFromCenter * yFromCenter);
+        // Draw sectors around the circle
+        for (let i = 0; i < this.sectorCount * 2; i++) {
+            const startAngle = i * sectorAngle;
+            const endAngle = (i + 1) * sectorAngle;
             
-            // Calculate angles using atan2 for proper quadrant handling
-            const leftAngle = Math.atan2(yFromCenter, -xFromCenter);
-            const rightAngle = Math.atan2(yFromCenter, xFromCenter);
+            // Determine which of the 5 color zones this sector falls into
+            // Map sector index to one of 5 color zones (0-4)
+            const colorZone = Math.floor((i % this.sectorCount) * 5 / this.sectorCount);
+            const color = this.sectorColors[colorZone];
             
-            allAngles.push(leftAngle);
-            allAngles.push(rightAngle);
-        });
-        
-        // Sort angles and adjust to start from the top (negative PI/2)
-        allAngles.sort((a, b) => a - b);
-        
-        // Find the index of the angle closest to the top of the circle (-PI/2)
-        const topAngle = -Math.PI / 2;
-        let startIndex = 0;
-        let minDiff = Math.abs(allAngles[0] - topAngle);
-        
-        for (let i = 1; i < allAngles.length; i++) {
-            const diff = Math.abs(allAngles[i] - topAngle);
-            if (diff < minDiff) {
-                minDiff = diff;
-                startIndex = i;
-            }
-        }
-        
-        // Draw sectors between consecutive angles, starting from the top
-        const totalSectors = allAngles.length;
-        
-        for (let i = 0; i < totalSectors; i++) {
-            const currentIndex = (startIndex + i) % totalSectors;
-            const nextIndex = (startIndex + i + 1) % totalSectors;
-            
-            // Use colors in order directly from the sectorColors array
-            const colorIndex = i % this.sectorColors.length;
-            
-            this.drawSector(allAngles[currentIndex], allAngles[nextIndex], this.sectorColors[colorIndex]);
+            // Draw the sector
+            this.drawSector(startAngle, endAngle, color);
         }
     }
     
@@ -201,8 +174,14 @@ class CircleCanvas {
     
     // Method to update marker positions
     updateMarkerPositions(newPositions) {
-        this.markerYPositions = newPositions;
-        this.dataElement.textContent = this.markerYPositions;
+        this.oneSideSectorNum = newPositions;
+        this.dataElement.textContent = this.oneSideSectorNum;
+        this.draw();
+    }
+    
+    // Method to update sector count
+    updateSectorCount(newCount) {
+        this.sectorCount = newCount;
         this.draw();
     }
 }
@@ -222,34 +201,13 @@ const green2 = "#99ff99";
 const green3 = "#ccffcc";
 
 // Colors for Canvas 1
-const canvas1Colors = [
-    yellow2, yellow1, yellow2, yellow2, 
-    yellow3, blue3, blue2, blue2,
-    blue1, blue2, blue1, blue2, 
-    blue2, blue3, yellow3, yellow2
-];
+const canvas1Colors = [red1, red2, red3, yellow1, yellow2];
 
 // Different colors for Canvas 2
-const canvas2Colors = [
-    red2, red1, red2, red2, 
-    red3, green3, green2, green2,
-    green1, green2, green1, green2, 
-    green2, green3, red3, red2
-];
+
 
 // Define different marker positions for each canvas
 //const canvas1v2MarkerPositions = [0.197, 0.4, 0.599, 0.8, 1];
-const canvas1MarkerPositions = [0.197, 0.299, 0.4, 0.5, 0.599, 0.7, 0.8, 0.9, 1];
-//const canvas2MarkerPositions = [0.197, 0.25, 0.299, 0.35, 0.4, 0.45, 0.5, 0.55, 0.599, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1];
-//const canvas3MarkerPositions = [0.197, 0.25, 0.299, 0.35, 0.4, 0.45, 0.5, 0.55, 0.599, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1];
+const canvas1OneSideSectorNum = 8;
 
-// Create the two canvas instances with different marker positions
-//const canvas1v2 = new CircleCanvas('circleCanvas1v2', 'markerYValueData1', canvas1Colors, canvas1v2MarkerPositions);
-const canvas1 = new CircleCanvas('circleCanvas1', 'markerYValueData1', canvas1Colors, canvas1MarkerPositions);
-//const canvas2 = new CircleCanvas('circleCanvas2', 'markerYValueData2', canvas2Colors, canvas2MarkerPositions);
-///const canvas3 = new CircleCanvas('circleCanvas3', 'markerYValueData2', canvas2Colors, canvas2MarkerPositions);
-
-// Example of how to update a specific canvas
-// To be used for future functionality:
-// canvas1.updateColors(newColorsArray);
-// canvas2.updateMarkerPositions(newPositionsArray);
+const canvas1 = new CircleCanvas('circleCanvas1', 'markerYValueData1', canvas1Colors, canvas1OneSideSectorNum);

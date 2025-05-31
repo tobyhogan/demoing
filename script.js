@@ -123,9 +123,9 @@ class CircleCanvas {
         this.ctx.closePath();
         this.ctx.fillStyle = color;
         this.ctx.fill();
-        this.ctx.strokeStyle = 'white';
-        this.ctx.lineWidth = 0.0001;
-        this.ctx.stroke();
+        //this.ctx.strokeStyle = 'rgba(255, 255, 255, 0)';
+        //this.ctx.lineWidth = 0;
+        //this.ctx.stroke();
     }
     
     drawSectors() {
@@ -238,16 +238,16 @@ const canvas2Colors = [
 ];
 
 // Define different marker positions for each canvas
-const canvas1v2MarkerPositions = [0.197, 0.4, 0.599, 0.8, 1];
+//const canvas1v2MarkerPositions = [0.197, 0.4, 0.599, 0.8, 1];
 const canvas1MarkerPositions = [0.197, 0.299, 0.4, 0.5, 0.599, 0.7, 0.8, 0.9, 1];
-const canvas2MarkerPositions = [0.197, 0.25, 0.299, 0.35, 0.4, 0.45, 0.5, 0.55, 0.599, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1];
-const canvas3MarkerPositions = [0.197, 0.25, 0.299, 0.35, 0.4, 0.45, 0.5, 0.55, 0.599, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1];
+//const canvas2MarkerPositions = [0.197, 0.25, 0.299, 0.35, 0.4, 0.45, 0.5, 0.55, 0.599, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1];
+//const canvas3MarkerPositions = [0.197, 0.25, 0.299, 0.35, 0.4, 0.45, 0.5, 0.55, 0.599, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1];
 
 // Create the two canvas instances with different marker positions
-const canvas1v2 = new CircleCanvas('circleCanvas1v2', 'markerYValueData1', canvas1Colors, canvas1v2MarkerPositions);
+//const canvas1v2 = new CircleCanvas('circleCanvas1v2', 'markerYValueData1', canvas1Colors, canvas1v2MarkerPositions);
 const canvas1 = new CircleCanvas('circleCanvas1', 'markerYValueData1', canvas1Colors, canvas1MarkerPositions);
-const canvas2 = new CircleCanvas('circleCanvas2', 'markerYValueData2', canvas2Colors, canvas2MarkerPositions);
-const canvas3 = new CircleCanvas('circleCanvas3', 'markerYValueData2', canvas2Colors, canvas2MarkerPositions);
+//const canvas2 = new CircleCanvas('circleCanvas2', 'markerYValueData2', canvas2Colors, canvas2MarkerPositions);
+///const canvas3 = new CircleCanvas('circleCanvas3', 'markerYValueData2', canvas2Colors, canvas2MarkerPositions);
 
 // Example of how to update a specific canvas
 // To be used for future functionality:

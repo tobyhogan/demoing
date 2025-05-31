@@ -175,12 +175,14 @@ class CircleCanvas {
             const leftEndAngle = -angles[i];     // Top angle of the sector
             
             // Right side sector (positive angles)
-            const rightStartAngle = angles[i+1]; // Bottom angle of the sector
-            const rightEndAngle = angles[i];     // Top angle of the sector
+            const rightStartAngle = angles[i];   // Top angle of the sector 
+            const rightEndAngle = angles[i+1];   // Bottom angle of the sector
             
-            // Map sector index to one of 5 color zones (0-4)
-            const colorZone = Math.floor(i * 5 / this.oneSideSectorNum);
-            const color = this.sectorColors[colorZone];
+            // Use the correct color from the array based on the sector index
+            const colorIndex = i % this.sectorColors.length;
+            const color = this.sectorColors[colorIndex];
+            
+            console.log(`Sector ${i}: Using color ${color}`); // Debugging
             
             // Draw left and right sectors
             this.drawSector(leftStartAngle, leftEndAngle, color);
@@ -234,10 +236,33 @@ const green1 = "#66ff66";
 const green2 = "#99ff99";
 const green3 = "#ccffcc";
 
+
+const intensityMin = 0.197;
+const intensityMax = 1;
+
 // Colors for Canvas 1
 const canvas1Colors = [red1, red2, red3, yellow1, yellow2];
 
-// Define different marker positions for each canvas
-const canvas1OneSideSectorNum = 9;
 
-const canvas1 = new CircleCanvas('circleCanvas1', 'markerYValueData1', canvas1Colors, canvas1OneSideSectorNum);
+// Define different marker positions for each canvas
+const canvas1OneSideSectorNum = 12;
+
+const canvas1SectorColors = [];
+
+for (let i = 0; i<12; i++) {
+
+  let idx = Math.round((i / 12) * 5);
+
+  console.log(idx);
+
+
+  canvas1SectorColors.push(canvas1Colors[idx]);
+
+  //console.log("hi")
+  
+}
+
+console.log(canvas1SectorColors)
+
+
+const canvas1 = new CircleCanvas('circleCanvas1', 'markerYValueData1', canvas1SectorColors, canvas1OneSideSectorNum);

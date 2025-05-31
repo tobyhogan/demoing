@@ -123,8 +123,8 @@ class CircleCanvas {
         this.ctx.closePath();
         this.ctx.fillStyle = color;
         this.ctx.fill();
-        this.ctx.strokeStyle = '#666';
-        this.ctx.lineWidth = 1;
+        this.ctx.strokeStyle = 'white';
+        this.ctx.lineWidth = 0.0001;
         this.ctx.stroke();
     }
     

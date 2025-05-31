@@ -119,7 +119,7 @@ function drawCircle() {
     // Draw the circle outline for reference
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.0)';
     ctx.lineWidth = 1;
     ctx.stroke();
 }

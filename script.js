@@ -10,17 +10,48 @@ class CircleCanvas {
         this.centerY = this.canvas.height / 2;
         this.radius = 150;
         
-        // Y positions for markers (0.197 to 1, where 0.197 is bottom and 1 is top)
-        // Use provided positions or default if not provided
+        // Number of sectors on one side of the circle
         this.oneSideSectorNum = oneSideSectorNum;
         this.dataElement.textContent = this.oneSideSectorNum;
         
-        // Number of sectors on each side and colors (array of 5 colors)
-        this.sectorCount = sectorCount;
+        // Colors for the sectors
         this.sectorColors = sectorColors;
+        
+        // Calculate y positions for the sector boundaries
+        this.sectorYPositions = this.calculateSectorYPositions();
         
         // Initial draw
         this.draw();
+    }
+    
+    // Calculate evenly spaced y-positions for sector boundaries
+    calculateSectorYPositions() {
+        const yPositions = [];
+        const minY = 0.197;  // Bottom of circle
+        const maxY = 1.0;    // Top of circle
+        const step = (maxY - minY) / this.oneSideSectorNum;
+        
+        for (let i = 0; i <= this.oneSideSectorNum; i++) {
+            yPositions.push(minY + i * step);
+        }
+        
+        return yPositions;
+    }
+    
+    // Convert y-position to angle on the circle
+    yPositionToAngle(yPos) {
+        // Normalize the y position
+        const normalizedY = (yPos - 0.197) / (1 - 0.197);
+        
+        // Map to the vertical position on the circle (-radius to radius)
+        const yFromCenter = this.radius - (normalizedY * 2 * this.radius);
+        
+        // Calculate the angle using the arcsin function
+        // y = radius * sin(angle) => angle = arcsin(y/radius)
+        const angle = Math.asin(yFromCenter / this.radius);
+        
+        // Return the angle
+        return angle;
     }
     
     drawCircle() {
@@ -60,7 +91,8 @@ class CircleCanvas {
     }
     
     drawMarkers() {
-        this.oneSideSectorNum.forEach((yPos, index) => {
+        // Draw markers at sector boundaries
+        this.sectorYPositions.forEach(yPos => {
             const positions = this.calculateMarkerPosition(yPos);
             
             // Draw markers on both sides of the circle
@@ -130,22 +162,29 @@ class CircleCanvas {
     }
     
     drawSectors() {
-        // Calculate the angle for each sector
-        const fullCircle = 2 * Math.PI;
-        const sectorAngle = fullCircle / (this.sectorCount * 2); // Total sectors * 2 for mirroring
+        // Calculate angles for each sector boundary
+        const angles = [];
+        for (let yPos of this.sectorYPositions) {
+            angles.push(this.yPositionToAngle(yPos));
+        }
         
-        // Draw sectors around the circle
-        for (let i = 0; i < this.sectorCount * 2; i++) {
-            const startAngle = i * sectorAngle;
-            const endAngle = (i + 1) * sectorAngle;
+        // Draw sectors on both sides (left and right)
+        for (let i = 0; i < this.oneSideSectorNum; i++) {
+            // Left side sector (negative angles)
+            const leftStartAngle = -angles[i+1]; // Bottom angle of the sector
+            const leftEndAngle = -angles[i];     // Top angle of the sector
             
-            // Determine which of the 5 color zones this sector falls into
+            // Right side sector (positive angles)
+            const rightStartAngle = angles[i+1]; // Bottom angle of the sector
+            const rightEndAngle = angles[i];     // Top angle of the sector
+            
             // Map sector index to one of 5 color zones (0-4)
-            const colorZone = Math.floor((i % this.sectorCount) * 5 / this.sectorCount);
+            const colorZone = Math.floor(i * 5 / this.oneSideSectorNum);
             const color = this.sectorColors[colorZone];
             
-            // Draw the sector
-            this.drawSector(startAngle, endAngle, color);
+            // Draw left and right sectors
+            this.drawSector(leftStartAngle, leftEndAngle, color);
+            this.drawSector(rightStartAngle, rightEndAngle, color);
         }
     }
     
@@ -172,16 +211,11 @@ class CircleCanvas {
         this.draw();
     }
     
-    // Method to update marker positions
-    updateMarkerPositions(newPositions) {
-        this.oneSideSectorNum = newPositions;
-        this.dataElement.textContent = this.oneSideSectorNum;
-        this.draw();
-    }
-    
     // Method to update sector count
     updateSectorCount(newCount) {
-        this.sectorCount = newCount;
+        this.oneSideSectorNum = newCount;
+        this.dataElement.textContent = this.oneSideSectorNum;
+        this.sectorYPositions = this.calculateSectorYPositions();
         this.draw();
     }
 }
@@ -203,11 +237,7 @@ const green3 = "#ccffcc";
 // Colors for Canvas 1
 const canvas1Colors = [red1, red2, red3, yellow1, yellow2];
 
-// Different colors for Canvas 2
-
-
 // Define different marker positions for each canvas
-//const canvas1v2MarkerPositions = [0.197, 0.4, 0.599, 0.8, 1];
-const canvas1OneSideSectorNum = 8;
+const canvas1OneSideSectorNum = 9;
 
 const canvas1 = new CircleCanvas('circleCanvas1', 'markerYValueData1', canvas1Colors, canvas1OneSideSectorNum);

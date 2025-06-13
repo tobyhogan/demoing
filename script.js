@@ -1,6 +1,6 @@
 // Canvas class to handle all drawing and functionality for each canvas
 class CircleCanvas {
-    constructor(canvasId, dataElementId, colors, numMarkers) {
+    constructor(canvasId, dataElementId, summer1, summer2, winter1, winter2, numMarkers) {
         this.canvas = document.getElementById(canvasId);
         this.ctx = this.canvas.getContext('2d');
         this.dataElement = document.getElementById(dataElementId);
@@ -19,8 +19,11 @@ class CircleCanvas {
         }
         this.dataElement.textContent = this.markerAngles.map(a => a.toFixed(2)).join(',');
 
-        // Colors for sectors between adjacent markers
-        this.sectorColors = colors;
+        // Store the four colors
+        this.summer1 = summer1;
+        this.summer2 = summer2;
+        this.winter1 = winter1;
+        this.winter2 = winter2;
 
         // Initial draw
         this.draw();
@@ -107,6 +110,56 @@ class CircleCanvas {
         this.ctx.restore();
     }
     
+    // Helper: parse hex color to [r,g,b]
+    hexToRgb(hex) {
+        hex = hex.replace('#', '');
+        if (hex.length === 3) {
+            hex = hex.split('').map(x => x + x).join('');
+        }
+        const num = parseInt(hex, 16);
+        return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
+    }
+
+    // Helper: interpolate between two rgb arrays
+    lerpColor(rgb1, rgb2, t) {
+        return [
+            Math.round(rgb1[0] + (rgb2[0] - rgb1[0]) * t),
+            Math.round(rgb1[1] + (rgb2[1] - rgb1[1]) * t),
+            Math.round(rgb1[2] + (rgb2[2] - rgb1[2]) * t)
+        ];
+    }
+
+    // Helper: rgb array to hex string
+    rgbToHex(rgb) {
+        return '#' + rgb.map(x => x.toString(16).padStart(2, '0')).join('');
+    }
+
+    // Given an angle, return the interpolated color for that sector
+    getSectorColor(angle) {
+        // Normalize angle to [0, 2PI)
+        let a = angle;
+        while (a < 0) a += 2 * Math.PI;
+        // Top half: sin(a) < 0, Bottom half: sin(a) >= 0
+        // For top: summer1 (top) to summer2 (bottom of top half)
+        // For bottom: winter2 (top of bottom half) to winter1 (bottom)
+        let t;
+        if (Math.sin(a) < 0) {
+            // Top half (yellow)
+            // t = (sin(a) + 1) / 1, but restrict to top half: sin(a) in [-1,0] → t in [0,1]
+            t = (Math.sin(a) + 1);
+            const c1 = this.hexToRgb(this.summer1);
+            const c2 = this.hexToRgb(this.summer2);
+            return this.rgbToHex(this.lerpColor(c1, c2, t));
+        } else {
+            // Bottom half (blue)
+            // t = sin(a), sin(a) in [0,1] → t in [0,1]
+            t = Math.sin(a);
+            const c1 = this.hexToRgb(this.winter2);
+            const c2 = this.hexToRgb(this.winter1);
+            return this.rgbToHex(this.lerpColor(c1, c2, t));
+        }
+    }
+    
     drawSector(angle1, angle2, color) {
         // Draw sector between two angles
         this.ctx.beginPath();
@@ -124,8 +177,12 @@ class CircleCanvas {
         for (let i = 0; i < this.numMarkers; i++) {
             const angle1 = this.markerAngles[i];
             const angle2 = this.markerAngles[(i + 1) % this.numMarkers];
-            const colorIndex = i % this.sectorColors.length;
-            this.drawSector(angle1, angle2, this.sectorColors[colorIndex]);
+            // Use the midpoint angle for color interpolation
+            let midAngle = (angle1 + angle2) / 2;
+            // If crossing the 2PI boundary, adjust
+            if (angle2 < angle1) midAngle += Math.PI;
+            const color = this.getSectorColor(midAngle);
+            this.drawSector(angle1, angle2, color);
         }
     }
     
@@ -147,8 +204,11 @@ class CircleCanvas {
     }
     
     // Method to update colors
-    updateColors(newColors) {
-        this.sectorColors = newColors;
+    updateColors(summer1, summer2, winter1, winter2) {
+        this.summer1 = summer1;
+        this.summer2 = summer2;
+        this.winter1 = winter1;
+        this.winter2 = winter2;
         this.draw();
     }
     
@@ -164,38 +224,14 @@ class CircleCanvas {
     }
 }
 
-// Define colors for both canvases
-const blue1 = "#6666ff";
-const blue2 = "#8888ff";
-const blue3 = "#aaaaff";
-const yellow1 = "#ffff66";
-const yellow2 = "#ffff99";
-const yellow3 = "#ffffcc";
-const red1 = "#ff6666";
-const red2 = "#ff9999";
-const red3 = "#ffcccc";
-const green1 = "#66ff66";
-const green2 = "#99ff99";
-const green3 = "#ccffcc";
+// Example colors
+const summer1 = "#ffff00";
+const summer2 = "#ffffdd";
+const winter1 = "#0000ff";
+const winter2 = "#ffffff";
 
-// Colors for Canvas 1
-const canvas1Colors = [
-    yellow1,yellow2, yellow2, yellow3, 
-    yellow1,yellow2, yellow2, yellow3, 
-    blue3, blue2, blue2, blue1,
-    blue3, blue2, blue2, blue1,
-    blue1, blue2, blue2, blue3, 
-    blue1, blue2, blue2, blue3, 
-    yellow3, yellow2, yellow2, yellow1,
-    yellow3, yellow2, yellow2, yellow1
-    
-];
-
-// Different colors for Canvas 2
-
-
-// Create the canvas instance with number of markers = number of sectors/colors
-const canvas1 = new CircleCanvas('circleCanvas1', 'markerYValueData1', canvas1Colors, canvas1Colors.length);
+// Create the canvas instance with number of markers (e.g. 32)
+const canvas1 = new CircleCanvas('circleCanvas1', 'markerYValueData1', summer1, summer2, winter1, winter2, 32);
 
 // Example of how to update a specific canvas
 // To be used for future functionality:

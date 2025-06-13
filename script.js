@@ -48,7 +48,7 @@ class CircleCanvas {
     drawMarker(x, y) {
         // Draw marker circle
         this.ctx.beginPath();
-        this.ctx.arc(x, y, 4, 0, 2 * Math.PI);
+        this.ctx.arc(x, y, 2, 0, 2 * Math.PI);
         this.ctx.fillStyle = 'black';
         this.ctx.fill();
         this.ctx.strokeStyle = 'black';
@@ -231,7 +231,7 @@ const winter1 = "#0000ff";
 const winter2 = "#ffffff";
 
 // Create the canvas instance with number of markers (e.g. 32)
-const canvas1 = new CircleCanvas('circleCanvas1', 'markerYValueData1', summer1, summer2, winter1, winter2, 50);
+const canvas1 = new CircleCanvas('circleCanvas1', 'markerYValueData1', summer1, summer2, winter1, winter2, 48);
 
 // Example of how to update a specific canvas
 // To be used for future functionality:

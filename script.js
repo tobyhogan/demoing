@@ -180,10 +180,15 @@ const green3 = "#ccffcc";
 
 // Colors for Canvas 1
 const canvas1Colors = [
-    yellow1, yellow2, yellow2, yellow3, 
+    yellow1,yellow2, yellow2, yellow3, 
+    yellow1,yellow2, yellow2, yellow3, 
+    blue3, blue2, blue2, blue1,
     blue3, blue2, blue2, blue1,
     blue1, blue2, blue2, blue3, 
+    blue1, blue2, blue2, blue3, 
+    yellow3, yellow2, yellow2, yellow1,
     yellow3, yellow2, yellow2, yellow1
+    
 ];
 
 // Different colors for Canvas 2

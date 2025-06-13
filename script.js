@@ -1,27 +1,31 @@
 // Canvas class to handle all drawing and functionality for each canvas
 class CircleCanvas {
-    constructor(canvasId, dataElementId, colors, markerYPositions) {
+    constructor(canvasId, dataElementId, colors, numMarkers) {
         this.canvas = document.getElementById(canvasId);
         this.ctx = this.canvas.getContext('2d');
         this.dataElement = document.getElementById(dataElementId);
-        
+
         // Canvas and circle properties
         this.centerX = this.canvas.width / 2;
         this.centerY = this.canvas.height / 2;
         this.radius = 150;
-        
-        // Y positions for markers (0.197 to 1, where 0.197 is bottom and 1 is top)
-        // Use provided positions or default if not provided
-        this.markerYPositions = markerYPositions;
-        this.dataElement.textContent = this.markerYPositions;
-        
+
+        // Number of markers (and thus sectors)
+        this.numMarkers = numMarkers;
+        this.markerAngles = [];
+        for (let i = 0; i < this.numMarkers; i++) {
+            // Start from top (-PI/2), go clockwise
+            this.markerAngles.push(-Math.PI / 2 + i * 2 * Math.PI / this.numMarkers);
+        }
+        this.dataElement.textContent = this.markerAngles.map(a => a.toFixed(2)).join(',');
+
         // Colors for sectors between adjacent markers
         this.sectorColors = colors;
-        
+
         // Initial draw
         this.draw();
     }
-    
+
     drawCircle() {
         this.ctx.beginPath();
         this.ctx.arc(this.centerX, this.centerY, this.radius, 0, 2 * Math.PI);
@@ -29,24 +33,15 @@ class CircleCanvas {
         this.ctx.lineWidth = 3;
         this.ctx.stroke();
     }
-    
-    calculateMarkerPosition(yNormalized) {
-        // Convert normalized y (0.197-1) to actual y coordinate
-        // Map the range 0.197-1 to the full circle height
-        const normalizedRange = (yNormalized - 0.197) / (1 - 0.197);
-        const actualY = this.centerY + this.radius - (normalizedRange * 2 * this.radius);
-        
-        // Calculate x coordinate using circle equation: x² + y² = r²
-        const yFromCenter = actualY - this.centerY;
-        const xFromCenter = Math.sqrt(this.radius * this.radius - yFromCenter * yFromCenter);
-        
-        // Return both possible x positions (left and right side of circle)
+
+    calculateMarkerPosition(angle) {
+        // Calculate x, y on the circle for a given angle
         return {
-            left: { x: this.centerX - xFromCenter, y: actualY },
-            right: { x: this.centerX + xFromCenter, y: actualY }
+            x: this.centerX + this.radius * Math.cos(angle),
+            y: this.centerY + this.radius * Math.sin(angle)
         };
     }
-    
+
     drawMarker(x, y) {
         // Draw marker circle
         this.ctx.beginPath();
@@ -57,17 +52,14 @@ class CircleCanvas {
         this.ctx.lineWidth = 2;
         this.ctx.stroke();
     }
-    
+
     drawMarkers() {
-        this.markerYPositions.forEach((yPos, index) => {
-            const positions = this.calculateMarkerPosition(yPos);
-            
-            // Draw markers on both sides of the circle
-            this.drawMarker(positions.left.x, positions.left.y);
-            this.drawMarker(positions.right.x, positions.right.y);
+        this.markerAngles.forEach(angle => {
+            const pos = this.calculateMarkerPosition(angle);
+            this.drawMarker(pos.x, pos.y);
         });
     }
-    
+
     drawYAxis() {
         const axisX = 60; // X position for the y-axis (moved further left)
         const axisStartY = this.centerY - this.radius;
@@ -129,50 +121,11 @@ class CircleCanvas {
     }
     
     drawSectors() {
-        // Calculate all marker angles around the circle
-        const allAngles = [];
-        
-        this.markerYPositions.forEach(yPos => {
-            const normalizedRange = (yPos - 0.197) / (1 - 0.197);
-            const actualY = this.centerY + this.radius - (normalizedRange * 2 * this.radius);
-            const yFromCenter = actualY - this.centerY;
-            const xFromCenter = Math.sqrt(this.radius * this.radius - yFromCenter * yFromCenter);
-            
-            // Calculate angles using atan2 for proper quadrant handling
-            const leftAngle = Math.atan2(yFromCenter, -xFromCenter);
-            const rightAngle = Math.atan2(yFromCenter, xFromCenter);
-            
-            allAngles.push(leftAngle);
-            allAngles.push(rightAngle);
-        });
-        
-        // Sort angles and adjust to start from the top (negative PI/2)
-        allAngles.sort((a, b) => a - b);
-        
-        // Find the index of the angle closest to the top of the circle (-PI/2)
-        const topAngle = -Math.PI / 2;
-        let startIndex = 0;
-        let minDiff = Math.abs(allAngles[0] - topAngle);
-        
-        for (let i = 1; i < allAngles.length; i++) {
-            const diff = Math.abs(allAngles[i] - topAngle);
-            if (diff < minDiff) {
-                minDiff = diff;
-                startIndex = i;
-            }
-        }
-        
-        // Draw sectors between consecutive angles, starting from the top
-        const totalSectors = allAngles.length;
-        
-        for (let i = 0; i < totalSectors; i++) {
-            const currentIndex = (startIndex + i) % totalSectors;
-            const nextIndex = (startIndex + i + 1) % totalSectors;
-            
-            // Use colors in order directly from the sectorColors array
+        for (let i = 0; i < this.numMarkers; i++) {
+            const angle1 = this.markerAngles[i];
+            const angle2 = this.markerAngles[(i + 1) % this.numMarkers];
             const colorIndex = i % this.sectorColors.length;
-            
-            this.drawSector(allAngles[currentIndex], allAngles[nextIndex], this.sectorColors[colorIndex]);
+            this.drawSector(angle1, angle2, this.sectorColors[colorIndex]);
         }
     }
     
@@ -199,10 +152,14 @@ class CircleCanvas {
         this.draw();
     }
     
-    // Method to update marker positions
-    updateMarkerPositions(newPositions) {
-        this.markerYPositions = newPositions;
-        this.dataElement.textContent = this.markerYPositions;
+    // Method to update number of markers (and thus sectors)
+    updateNumMarkers(newNumMarkers) {
+        this.numMarkers = newNumMarkers;
+        this.markerAngles = [];
+        for (let i = 0; i < this.numMarkers; i++) {
+            this.markerAngles.push(-Math.PI / 2 + i * 2 * Math.PI / this.numMarkers);
+        }
+        this.dataElement.textContent = this.markerAngles.map(a => a.toFixed(2)).join(',');
         this.draw();
     }
 }
@@ -223,28 +180,17 @@ const green3 = "#ccffcc";
 
 // Colors for Canvas 1
 const canvas1Colors = [
-    yellow2, yellow1, yellow2, yellow2, 
-    yellow3, blue3, blue2, blue2,
-    blue1, blue2, blue1, blue2, 
-    blue2, blue3, yellow3, yellow2
+    yellow1, yellow2, yellow2, yellow3, 
+    blue3, blue2, blue2, blue1,
+    blue1, blue2, blue2, blue3, 
+    yellow3, yellow2, yellow2, yellow1
 ];
 
 // Different colors for Canvas 2
-const canvas2Colors = [
-    red2, red1, red2, red2, 
-    red3, green3, green2, green2,
-    green1, green2, green1, green2, 
-    green2, green3, red3, red2
-];
 
-// Define different marker positions for each canvas
-const canvas1v2MarkerPositions = [0.197, 0.4, 0.599, 0.8, 1];
-const canvas1MarkerPositions = [0.197, 0.299, 0.4, 0.5, 0.599, 0.7, 0.8, 0.9, 1];
-const canvas2MarkerPositions = [0.197, 0.25, 0.299, 0.35, 0.4, 0.45, 0.5, 0.55, 0.599, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1];
-const canvas3MarkerPositions = [0.197, 0.25, 0.299, 0.35, 0.4, 0.45, 0.5, 0.55, 0.599, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1];
 
-// Create the two canvas instances with different marker positions
-const canvas1 = new CircleCanvas('circleCanvas1', 'markerYValueData1', canvas1Colors, canvas1MarkerPositions);
+// Create the canvas instance with number of markers = number of sectors/colors
+const canvas1 = new CircleCanvas('circleCanvas1', 'markerYValueData1', canvas1Colors, canvas1Colors.length);
 
 // Example of how to update a specific canvas
 // To be used for future functionality:

@@ -229,7 +229,7 @@ class CircleCanvas {
 const summer1 = "#ffff00";
 const summer2 = "#ffa8a8";
 const winter2 = "#ffa8a8";
-const winter1 = "#0044ff";
+const winter1 = "#0077ff";
 
 // Create the canvas instance with number of markers (e.g. 32)
 const canvas1 = new CircleCanvas('circleCanvas1', 'markerYValueData1', summer1, summer2, winter1, winter2, 32);

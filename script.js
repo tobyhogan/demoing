@@ -136,26 +136,26 @@ class CircleCanvas {
 
     // Given an angle, return the interpolated color for that sector
     getSectorColor(angle) {
-        // Normalize angle to [0, 2PI)
-        let a = angle;
-        while (a < 0) a += 2 * Math.PI;
-        // Top half: sin(a) < 0, Bottom half: sin(a) >= 0
-        // For top: summer1 (top) to summer2 (bottom of top half)
-        // For bottom: winter2 (top of bottom half) to winter1 (bottom)
-        let t;
-        if (Math.sin(a) < 0) {
-            // Top half (yellow)
-            // t = (sin(a) + 1) / 1, but restrict to top half: sin(a) in [-1,0] → t in [0,1]
-            t = (Math.sin(a) + 1);
-            const c1 = this.hexToRgb(this.summer1);
-            const c2 = this.hexToRgb(this.summer2);
+        // Calculate the y-coordinate at the circumference for this angle
+        const y = this.centerY + this.radius * Math.sin(angle);
+        // Normalize y to [0,1]: 0 at bottom, 1 at top
+        const yNorm = 1 - ((y - (this.centerY - this.radius)) / (2 * this.radius));
+        // Top half: summer, Bottom half: winter
+        if (yNorm >= 0.5) {
+            // Top half: interpolate summer2 (bottom) to summer1 (top)
+            // t = (yNorm - 0.5) / 0.5, so t=0 at yNorm=0.5 (middle), t=1 at yNorm=1 (top)
+            const t = (yNorm - 0.5) / 0.5;
+            // Log how close the color is to summer2 (0) or summer1 (1)
+            console.log(`Sector angle ${angle.toFixed(2)}: summer2 (0) <--- t=${t.toFixed(2)} ---> summer1 (1)`);
+            const c1 = this.hexToRgb(this.summer2);
+            const c2 = this.hexToRgb(this.summer1);
             return this.rgbToHex(this.lerpColor(c1, c2, t));
         } else {
-            // Bottom half (blue)
-            // t = sin(a), sin(a) in [0,1] → t in [0,1]
-            t = Math.sin(a);
-            const c1 = this.hexToRgb(this.winter2);
-            const c2 = this.hexToRgb(this.winter1);
+            // Bottom half: interpolate winter2 (top of bottom) to winter1 (bottom)
+            // t = yNorm / 0.5, so t=0 at yNorm=0 (bottom), t=1 at yNorm=0.5 (middle)
+            const t = yNorm / 0.5;
+            const c1 = this.hexToRgb(this.winter1);
+            const c2 = this.hexToRgb(this.winter2);
             return this.rgbToHex(this.lerpColor(c1, c2, t));
         }
     }
@@ -231,7 +231,7 @@ const winter1 = "#0000ff";
 const winter2 = "#ffffff";
 
 // Create the canvas instance with number of markers (e.g. 32)
-const canvas1 = new CircleCanvas('circleCanvas1', 'markerYValueData1', summer1, summer2, winter1, winter2, 32);
+const canvas1 = new CircleCanvas('circleCanvas1', 'markerYValueData1', summer1, summer2, winter1, winter2, 50);
 
 // Example of how to update a specific canvas
 // To be used for future functionality:

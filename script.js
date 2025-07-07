@@ -227,6 +227,7 @@ class CircleCanvas {
 
 // Example colors
 const summer1 = "#ffff00";
+//const summer2 = "#ffa8a8";
 const summer2 = "#ffa8a8";
 const winter2 = "#ffa8a8";
 const winter1 = "#0077ff";

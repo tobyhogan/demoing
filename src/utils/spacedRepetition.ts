@@ -52,7 +52,17 @@ export function getCardsToReview(cards: Flashcard[]): Flashcard[] {
   return cards.filter(card => card.nextReview <= now);
 }
 
-export function createNewCard(front: string, back: string): Flashcard {
+export function createNewDeck(name: string, description: string, color: string): { id: string; name: string; description: string; color: string; cardCount: number } {
+  return {
+    id: crypto.randomUUID(),
+    name,
+    description,
+    color,
+    cardCount: 0,
+  };
+}
+
+export function createNewCard(front: string, back: string, deckId: string): Flashcard {
   return {
     id: crypto.randomUUID(),
     front,
@@ -62,5 +72,6 @@ export function createNewCard(front: string, back: string): Flashcard {
     interval: 0,
     repetitions: 0,
     easeFactor: 2.5,
+    deckId,
   };
 }

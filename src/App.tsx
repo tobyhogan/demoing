@@ -1,99 +1,111 @@
-import { useState, useEffect } from 'react';
-import type { Flashcard, DifficultyLevel } from './types/flashcard';
-import { updateCardAfterReview, getCardsToReview } from './utils/spacedRepetition';
-import { sampleFlashcards } from './data/sampleCards';
-import { Header } from './components/Header';
-import { Sidebar } from './components/Sidebar';
-import { CardDisplay } from './components/CardDisplay';
-import { DifficultyButtons } from './components/DifficultyButtons';
+import { useState } from 'react';
+import type { Flashcard, Deck, AppView } from './types/flashcard';
+import { createNewCard, createNewDeck } from './utils/spacedRepetition';
+import { sampleFlashcards, sampleDecks } from './data/sampleCards';
+import { HomePage } from './components/HomePage';
+import { StudyPage } from './components/StudyPage';
+import { AddCardPage } from './components/AddCardPage';
+import { CreateDeckPage } from './components/CreateDeckPage';
 
 function App() {
   const [cards, setCards] = useState<Flashcard[]>(sampleFlashcards);
-  const [cardsToReview, setCardsToReview] = useState<Flashcard[]>([]);
-  const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [showAnswer, setShowAnswer] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [decks, setDecks] = useState<Deck[]>(sampleDecks);
+  const [currentView, setCurrentView] = useState<AppView>('home');
+  const [selectedDeckId, setSelectedDeckId] = useState<string>('');
 
-  useEffect(() => {
-    const reviewCards = getCardsToReview(cards);
-    setCardsToReview(reviewCards);
-    setCurrentCardIndex(0);
-    setShowAnswer(false);
-  }, [cards]);
+  const handleStartStudy = (deckId: string) => {
+    setSelectedDeckId(deckId);
+    setCurrentView('study');
+  };
 
-  const handleDifficultySelect = (difficulty: DifficultyLevel) => {
-    if (cardsToReview.length === 0) return;
-
-    const currentCard = cardsToReview[currentCardIndex];
-    const updatedCard = updateCardAfterReview(currentCard, difficulty);
+  const handleAddCard = (front: string, back: string, deckId: string) => {
+    const newCard = createNewCard(front, back, deckId);
+    setCards(prev => [...prev, newCard]);
     
-    // Update the card in the main cards array
-    const updatedCards = cards.map(card => 
-      card.id === currentCard.id ? updatedCard : card
-    );
-    setCards(updatedCards);
-
-    // Move to next card or finish session
-    if (currentCardIndex < cardsToReview.length - 1) {
-      setCurrentCardIndex(currentCardIndex + 1);
-      setShowAnswer(false);
-    } else {
-      // Session complete, refresh cards to review
-      const newReviewCards = getCardsToReview(updatedCards);
-      setCardsToReview(newReviewCards);
-      setCurrentCardIndex(0);
-      setShowAnswer(false);
-    }
+    // Update deck card count
+    setDecks(prev => prev.map(deck => 
+      deck.id === deckId 
+        ? { ...deck, cardCount: deck.cardCount + 1 }
+        : deck
+    ));
+    
+    setCurrentView('home');
   };
 
-  const handleShowAnswer = () => {
-    setShowAnswer(true);
+  const handleCreateDeck = (name: string, description: string, color: string) => {
+    const newDeck = createNewDeck(name, description, color);
+    setDecks(prev => [...prev, newDeck]);
+    setCurrentView('home');
   };
 
-  const currentCard = cardsToReview[currentCardIndex];
+  const handleUpdateCard = (updatedCard: Flashcard) => {
+    setCards(prev => prev.map(card => 
+      card.id === updatedCard.id ? updatedCard : card
+    ));
+  };
+
+  const handleExitStudy = () => {
+    setCurrentView('home');
+    setSelectedDeckId('');
+  };
+
+  const handleShowAddCard = () => {
+    setCurrentView('add-card');
+  };
+
+  const handleShowCreateDeck = () => {
+    setCurrentView('create-deck');
+  };
+
+  const handleCancelAddCard = () => {
+    setCurrentView('home');
+  };
+
+  const handleCancelCreateDeck = () => {
+    setCurrentView('home');
+  };
+
+  const getDeckName = (deckId: string) => {
+    if (deckId === 'all') return 'All Decks';
+    return decks.find(deck => deck.id === deckId)?.name || 'Unknown Deck';
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar 
-        cards={cardsToReview}
-        currentIndex={currentCardIndex}
-        isOpen={sidebarOpen}
-        onToggle={() => setSidebarOpen(!sidebarOpen)}
-      />
-      
-      <div className="flex-1 flex flex-col">
-        <Header 
-          reviewCount={cardsToReview.length}
-          onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
+    <div className="min-h-screen bg-gray-50">
+      {currentView === 'home' && (
+        <HomePage
+          decks={decks}
+          cards={cards}
+          onStartStudy={handleStartStudy}
+          onAddCard={handleShowAddCard}
+          onCreateDeck={handleShowCreateDeck}
         />
-        
-        <main className="flex-1 flex items-center justify-center p-4">
-          {cardsToReview.length > 0 ? (
-            <div className="max-w-2xl w-full">
-              <CardDisplay 
-                card={currentCard}
-                showAnswer={showAnswer}
-                onShowAnswer={handleShowAnswer}
-                cardIndex={currentCardIndex}
-                totalCards={cardsToReview.length}
-              />
-              
-              {showAnswer && (
-                <DifficultyButtons onSelect={handleDifficultySelect} />
-              )}
-            </div>
-          ) : (
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                🎉 All caught up!
-              </h2>
-              <p className="text-gray-600">
-                No cards to review right now. Come back later!
-              </p>
-            </div>
-          )}
-        </main>
-      </div>
+      )}
+      
+      {currentView === 'study' && (
+        <StudyPage
+          cards={cards}
+          deckId={selectedDeckId}
+          deckName={getDeckName(selectedDeckId)}
+          onUpdateCard={handleUpdateCard}
+          onExit={handleExitStudy}
+        />
+      )}
+      
+      {currentView === 'add-card' && (
+        <AddCardPage
+          decks={decks}
+          onAddCard={handleAddCard}
+          onCancel={handleCancelAddCard}
+        />
+      )}
+      
+      {currentView === 'create-deck' && (
+        <CreateDeckPage
+          onCreateDeck={handleCreateDeck}
+          onCancel={handleCancelCreateDeck}
+        />
+      )}
     </div>
   );
 }

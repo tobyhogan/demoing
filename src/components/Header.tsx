@@ -1,9 +1,11 @@
 interface HeaderProps {
   reviewCount: number;
   onMenuToggle: () => void;
+  deckName?: string;
+  onExit?: () => void;
 }
 
-export function Header({ reviewCount, onMenuToggle }: HeaderProps) {
+export function Header({ reviewCount, onMenuToggle, deckName, onExit }: HeaderProps) {
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 px-4 py-3">
       <div className="flex items-center justify-between">
@@ -16,7 +18,24 @@ export function Header({ reviewCount, onMenuToggle }: HeaderProps) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <h1 className="text-xl font-semibold text-gray-900">Flashcards</h1>
+          
+          {onExit && (
+            <button
+              onClick={onExit}
+              className="p-2 rounded-md hover:bg-gray-100 text-gray-600 hover:text-gray-900"
+              title="Back to Home"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            </button>
+          )}
+          
+          <div>
+            <h1 className="text-xl font-semibold text-gray-900">
+              {deckName ? `Studying: ${deckName}` : 'Flashcards'}
+            </h1>
+          </div>
         </div>
         
         <div className="flex items-center space-x-2">

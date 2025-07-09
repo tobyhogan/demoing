@@ -1,4 +1,35 @@
-import type { Flashcard } from '../types/flashcard';
+import type { Flashcard, Deck } from '../types/flashcard';
+
+export const sampleDecks: Deck[] = [
+  {
+    id: 'general-knowledge',
+    name: 'General Knowledge',
+    description: 'Basic facts and trivia',
+    color: 'bg-blue-500',
+    cardCount: 4,
+  },
+  {
+    id: 'science',
+    name: 'Science',
+    description: 'Scientific facts and concepts',
+    color: 'bg-green-500',
+    cardCount: 2,
+  },
+  {
+    id: 'literature',
+    name: 'Literature',
+    description: 'Books, authors, and literary works',
+    color: 'bg-purple-500',
+    cardCount: 1,
+  },
+  {
+    id: 'history',
+    name: 'History',
+    description: 'Historical events and dates',
+    color: 'bg-red-500',
+    cardCount: 1,
+  },
+];
 
 export const sampleFlashcards: Flashcard[] = [
   {
@@ -10,6 +41,7 @@ export const sampleFlashcards: Flashcard[] = [
     interval: 0,
     repetitions: 0,
     easeFactor: 2.5,
+    deckId: 'general-knowledge',
   },
   {
     id: '2',
@@ -20,6 +52,7 @@ export const sampleFlashcards: Flashcard[] = [
     interval: 0,
     repetitions: 0,
     easeFactor: 2.5,
+    deckId: 'general-knowledge',
   },
   {
     id: '3',
@@ -30,6 +63,7 @@ export const sampleFlashcards: Flashcard[] = [
     interval: 0,
     repetitions: 0,
     easeFactor: 2.5,
+    deckId: 'literature',
   },
   {
     id: '4',
@@ -40,6 +74,7 @@ export const sampleFlashcards: Flashcard[] = [
     interval: 0,
     repetitions: 0,
     easeFactor: 2.5,
+    deckId: 'science',
   },
   {
     id: '5',
@@ -50,6 +85,7 @@ export const sampleFlashcards: Flashcard[] = [
     interval: 0,
     repetitions: 0,
     easeFactor: 2.5,
+    deckId: 'history',
   },
   {
     id: '6',
@@ -60,6 +96,7 @@ export const sampleFlashcards: Flashcard[] = [
     interval: 0,
     repetitions: 0,
     easeFactor: 2.5,
+    deckId: 'science',
   },
   {
     id: '7',
@@ -70,6 +107,7 @@ export const sampleFlashcards: Flashcard[] = [
     interval: 0,
     repetitions: 0,
     easeFactor: 2.5,
+    deckId: 'general-knowledge',
   },
   {
     id: '8',
@@ -80,5 +118,6 @@ export const sampleFlashcards: Flashcard[] = [
     interval: 0,
     repetitions: 0,
     easeFactor: 2.5,
+    deckId: 'general-knowledge',
   },
 ];

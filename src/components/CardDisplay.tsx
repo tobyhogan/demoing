@@ -13,7 +13,7 @@ export function CardDisplay({ card, showAnswer, onShowAnswer, cardIndex, totalCa
     <div className="bg-white rounded-lg shadow-lg p-8 mb-6">
       <div className="mb-6">
         <div className="flex justify-between items-center mb-4">
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-gray-500 w-[82px]">
             Card {cardIndex + 1} of {totalCards}
           </span>
           <div className="w-full bg-gray-200 rounded-full h-2 mx-4">

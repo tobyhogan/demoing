@@ -35,7 +35,7 @@ export function DifficultyButtons({ onSelect }: DifficultyButtonsProps) {
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <h3 className="text-lg font-medium text-gray-900 mb-4 text-center">
-        How well did you know this?
+        What was the difficulty of this card?
       </h3>
       
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">

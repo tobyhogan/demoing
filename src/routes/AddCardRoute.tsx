@@ -5,7 +5,7 @@ import type { Deck } from '../types/flashcard';
 
 interface AddCardRouteProps {
   decks: Deck[];
-  onAddCard: (front: string, back: string, deckId: string) => void;
+  onAddCard: (front: string, back: string, deckId: string) => Promise<void>;
 }
 
 export function AddCardRoute({ decks, onAddCard }: AddCardRouteProps) {
@@ -24,19 +24,24 @@ export function AddCardRoute({ decks, onAddCard }: AddCardRouteProps) {
     }
   }
 
-  const handleAddCard = (front: string, back: string, deckId: string) => {
-    onAddCard(front, back, deckId);
-    
-    // Navigate back to the deck if we came from one, otherwise go home
-    if (preselectedDeckId) {
-      const deck = decks.find(d => d.id === deckId);
-      if (deck) {
-        const slug = deck.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-        navigate(`/decks/${slug}`);
-        return;
+  const handleAddCard = async (front: string, back: string, deckId: string) => {
+    try {
+      await onAddCard(front, back, deckId);
+      
+      // Navigate back to the deck if we came from one, otherwise go home
+      if (preselectedDeckId) {
+        const deck = decks.find(d => d.id === deckId);
+        if (deck) {
+          const slug = deck.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+          navigate(`/decks/${slug}`);
+          return;
+        }
       }
+      navigate('/');
+    } catch (error) {
+      console.error('Failed to add card:', error);
+      // You could add error handling here (toast notification, etc.)
     }
-    navigate('/');
   };
 
   const handleCancel = () => {

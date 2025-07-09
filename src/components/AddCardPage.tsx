@@ -3,7 +3,7 @@ import type { Deck } from '../types/flashcard';
 
 interface AddCardPageProps {
   decks: Deck[];
-  onAddCard: (front: string, back: string, deckId: string) => void;
+  onAddCard: (front: string, back: string, deckId: string) => Promise<void>;
   onCancel: () => void;
   preselectedDeckId?: string;
 }
@@ -21,7 +21,7 @@ export function AddCardPage({ decks, onAddCard, onCancel, preselectedDeckId }: A
     setIsSubmitting(true);
     
     try {
-      onAddCard(front.trim(), back.trim(), selectedDeckId);
+      await onAddCard(front.trim(), back.trim(), selectedDeckId);
       
       // Reset form
       setFront('');

@@ -10,7 +10,7 @@ interface StudyPageProps {
   cards: Flashcard[];
   deckId: string;
   deckName: string;
-  onUpdateCard: (updatedCard: Flashcard) => void;
+  onUpdateCard: (updatedCard: Flashcard) => Promise<void>;
   onExit: () => void;
 }
 
@@ -28,22 +28,27 @@ export function StudyPage({ cards, deckId, deckName, onUpdateCard, onExit }: Stu
     setShowAnswer(false);
   }, [cards, deckId]);
 
-  const handleDifficultySelect = (difficulty: DifficultyLevel) => {
+  const handleDifficultySelect = async (difficulty: DifficultyLevel) => {
     if (cardsToReview.length === 0) return;
 
     const currentCard = cardsToReview[currentCardIndex];
     const updatedCard = updateCardAfterReview(currentCard, difficulty);
     
-    // Update the card
-    onUpdateCard(updatedCard);
+    try {
+      // Update the card
+      await onUpdateCard(updatedCard);
 
-    // Move to next card or finish session
-    if (currentCardIndex < cardsToReview.length - 1) {
-      setCurrentCardIndex(currentCardIndex + 1);
-      setShowAnswer(false);
-    } else {
-      // Session complete
-      onExit();
+      // Move to next card or finish session
+      if (currentCardIndex < cardsToReview.length - 1) {
+        setCurrentCardIndex(currentCardIndex + 1);
+        setShowAnswer(false);
+      } else {
+        // Session complete
+        onExit();
+      }
+    } catch (error) {
+      console.error('Failed to update card:', error);
+      // You could add error handling here
     }
   };
 

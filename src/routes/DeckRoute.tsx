@@ -6,11 +6,10 @@ import type { Deck, Flashcard } from '../types/flashcard';
 interface DeckRouteProps {
   decks: Deck[];
   cards: Flashcard[];
-  onAddCardToDeck: (deckId: string) => void;
   onStudyDeck: (deckId: string) => void;
 }
 
-export function DeckRoute({ decks, cards, onAddCardToDeck, onStudyDeck }: DeckRouteProps) {
+export function DeckRoute({ decks, cards, onStudyDeck }: DeckRouteProps) {
   const { deckSlug } = useParams();
   const navigate = useNavigate();
 
@@ -31,7 +30,6 @@ export function DeckRoute({ decks, cards, onAddCardToDeck, onStudyDeck }: DeckRo
     <ViewDeckPage
       deck={deck}
       cards={cards}
-      onAddCardToDeck={() => onAddCardToDeck(deck.id)}
       onStudyDeck={() => onStudyDeck(deck.id)}
       onBack={() => navigate('/')}
     />

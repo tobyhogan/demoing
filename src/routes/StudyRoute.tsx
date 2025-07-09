@@ -6,7 +6,7 @@ import type { Deck, Flashcard } from '../types/flashcard';
 interface StudyRouteProps {
   decks: Deck[];
   cards: Flashcard[];
-  onUpdateCard: (card: Flashcard) => void;
+  onUpdateCard: (card: Flashcard) => Promise<void>;
 }
 
 export function StudyRoute({ decks, cards, onUpdateCard }: StudyRouteProps) {

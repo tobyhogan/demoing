@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 interface CreateDeckPageProps {
-  onCreateDeck: (name: string, description: string, color: string) => void;
+  onCreateDeck: (name: string, description: string, color: string) => Promise<void>;
   onCancel: () => void;
 }
 
@@ -29,7 +29,7 @@ export function CreateDeckPage({ onCreateDeck, onCancel }: CreateDeckPageProps) 
     setIsSubmitting(true);
     
     try {
-      onCreateDeck(name.trim(), description.trim(), selectedColor);
+      await onCreateDeck(name.trim(), description.trim(), selectedColor);
       
       // Reset form
       setName('');

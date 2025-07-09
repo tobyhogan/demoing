@@ -5,12 +5,13 @@ interface AddCardPageProps {
   decks: Deck[];
   onAddCard: (front: string, back: string, deckId: string) => void;
   onCancel: () => void;
+  preselectedDeckId?: string;
 }
 
-export function AddCardPage({ decks, onAddCard, onCancel }: AddCardPageProps) {
+export function AddCardPage({ decks, onAddCard, onCancel, preselectedDeckId }: AddCardPageProps) {
   const [front, setFront] = useState('');
   const [back, setBack] = useState('');
-  const [selectedDeckId, setSelectedDeckId] = useState(decks[0]?.id || '');
+  const [selectedDeckId, setSelectedDeckId] = useState(preselectedDeckId || decks[0]?.id || '');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {

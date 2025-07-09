@@ -20,7 +20,7 @@ export interface Deck {
 
 export type DifficultyLevel = 'again' | 'hard' | 'medium' | 'easy';
 
-export type AppView = 'home' | 'study' | 'add-card' | 'create-deck';
+export type AppView = 'home' | 'study' | 'add-card' | 'create-deck' | 'view-deck';
 
 export interface StudySession {
   cardsToReview: Flashcard[];

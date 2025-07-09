@@ -1,15 +1,16 @@
+import { useNavigate } from 'react-router-dom';
 import type { Deck, Flashcard } from '../types/flashcard';
 import { getCardsToReview } from '../utils/spacedRepetition';
+import { createSlug } from '../utils/urlUtils';
 
 interface HomePageProps {
   decks: Deck[];
   cards: Flashcard[];
-  onStartStudy: (deckId: string) => void;
-  onAddCard: () => void;
-  onCreateDeck: () => void;
 }
 
-export function HomePage({ decks, cards, onStartStudy, onAddCard, onCreateDeck }: HomePageProps) {
+export function HomePage({ decks, cards }: HomePageProps) {
+  const navigate = useNavigate();
+  
   const getReviewCountForDeck = (deckId: string) => {
     const deckCards = cards.filter(card => card.deckId === deckId);
     return getCardsToReview(deckCards).length;
@@ -38,7 +39,7 @@ export function HomePage({ decks, cards, onStartStudy, onAddCard, onCreateDeck }
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <button
-            onClick={onAddCard}
+            onClick={() => navigate('/add-card')}
             className="p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors text-left"
           >
             <div className="text-2xl mb-2">➕</div>
@@ -47,7 +48,7 @@ export function HomePage({ decks, cards, onStartStudy, onAddCard, onCreateDeck }
           </button>
           
           <button
-            onClick={onCreateDeck}
+            onClick={() => navigate('/create-deck')}
             className="p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors text-left"
           >
             <div className="text-2xl mb-2">📁</div>
@@ -57,7 +58,7 @@ export function HomePage({ decks, cards, onStartStudy, onAddCard, onCreateDeck }
           
           {totalReviewCount > 0 && (
             <button
-              onClick={() => onStartStudy('all')}
+              onClick={() => navigate('/study/all')}
               className="p-6 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-left"
             >
               <div className="text-2xl mb-2">🚀</div>
@@ -75,6 +76,7 @@ export function HomePage({ decks, cards, onStartStudy, onAddCard, onCreateDeck }
           {decks.map((deck) => {
             const reviewCount = getReviewCountForDeck(deck.id);
             const totalCards = cards.filter(card => card.deckId === deck.id).length;
+            const deckSlug = createSlug(deck.name);
             
             return (
               <div
@@ -83,33 +85,49 @@ export function HomePage({ decks, cards, onStartStudy, onAddCard, onCreateDeck }
               >
                 <div className={`h-4 ${deck.color}`} />
                 <div className="p-6">
-                  <h3 className="font-semibold text-gray-900 mb-2">{deck.name}</h3>
-                  {deck.description && (
-                    <p className="text-gray-600 text-sm mb-4">{deck.description}</p>
-                  )}
-                  
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-gray-500 text-sm">{totalCards} cards</span>
-                    {reviewCount > 0 && (
-                      <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
-                        {reviewCount} to review
-                      </span>
+                  <div 
+                    className="cursor-pointer mb-4"
+                    onClick={() => navigate(`/decks/${deckSlug}`)}
+                  >
+                    <h3 className="font-semibold text-gray-900 mb-2 hover:text-blue-600 transition-colors">
+                      {deck.name}
+                    </h3>
+                    {deck.description && (
+                      <p className="text-gray-600 text-sm mb-4">{deck.description}</p>
                     )}
+                    
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-500 text-sm">{totalCards} cards</span>
+                      {reviewCount > 0 && (
+                        <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">
+                          {reviewCount} to review
+                        </span>
+                      )}
+                    </div>
                   </div>
                   
-                  <button
-                    onClick={() => onStartStudy(deck.id)}
-                    disabled={reviewCount === 0}
-                    className={`
-                      w-full py-2 px-4 rounded-md font-medium transition-colors
-                      ${reviewCount > 0
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      }
-                    `}
-                  >
-                    {reviewCount > 0 ? 'Study Now' : 'No cards to review'}
-                  </button>
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => navigate(`/study/${deckSlug}`)}
+                      disabled={reviewCount === 0}
+                      className={`
+                        w-full py-2 px-4 rounded-md font-medium transition-colors
+                        ${reviewCount > 0
+                          ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                          : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        }
+                      `}
+                    >
+                      {reviewCount > 0 ? 'Study Now' : 'No cards to review'}
+                    </button>
+                    
+                    <button
+                      onClick={() => navigate(`/decks/${deckSlug}`)}
+                      className="w-full py-2 px-4 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      View Cards ({totalCards})
+                    </button>
+                  </div>
                 </div>
               </div>
             );

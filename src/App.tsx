@@ -39,10 +39,10 @@ function App() {
 
   const handleCreateDeck = async (name: string, description: string, color: string) => {
     try {
-      await createDeck(name, description, color);
+      return await createDeck(name, description, color);
     } catch (error) {
       console.error('Failed to create deck:', error);
-      // You could add toast notifications here
+      throw error;
     }
   };
 
@@ -121,6 +121,7 @@ function App() {
                 cards={cards}
                 onUpdateDeck={updateDeck}
                 onDeleteDeck={deleteDeck}
+                onCreateDeck={handleCreateDeck}
               />
             } 
           />

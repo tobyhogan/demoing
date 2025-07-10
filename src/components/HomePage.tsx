@@ -9,14 +9,19 @@ interface HomePageProps {
   cards: Flashcard[];
   onUpdateDeck: (id: string, updates: Partial<Omit<Deck, 'id' | 'cardCount'>>) => Promise<Deck>;
   onDeleteDeck: (id: string) => Promise<void>;
+  onCreateDeck: (name: string, description: string, color: string) => Promise<Deck>;
 }
 
-export function HomePage({ decks, cards, onUpdateDeck, onDeleteDeck }: HomePageProps) {
+export function HomePage({ decks, cards, onUpdateDeck, onDeleteDeck, onCreateDeck }: HomePageProps) {
   const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [editingDeck, setEditingDeck] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [deleteConfirmDeck, setDeleteConfirmDeck] = useState<Deck | null>(null);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [newDeckName, setNewDeckName] = useState('');
+  const [newDeckDescription, setNewDeckDescription] = useState('');
+  const [newDeckColor, setNewDeckColor] = useState('bg-blue-500');
   
   const getReviewCountForDeck = (deckId: string) => {
     const deckCards = cards.filter(card => card.deckId === deckId);
@@ -59,6 +64,39 @@ export function HomePage({ decks, cards, onUpdateDeck, onDeleteDeck }: HomePageP
   const cancelDelete = () => {
     setDeleteConfirmDeck(null);
   };
+
+  const handleCreateDeck = async () => {
+    if (newDeckName.trim()) {
+      try {
+        await onCreateDeck(newDeckName.trim(), newDeckDescription.trim(), newDeckColor);
+        // Reset form
+        setNewDeckName('');
+        setNewDeckDescription('');
+        setNewDeckColor('bg-blue-500');
+        setShowCreateForm(false);
+      } catch (error) {
+        console.error('Failed to create deck:', error);
+      }
+    }
+  };
+
+  const cancelCreateDeck = () => {
+    setNewDeckName('');
+    setNewDeckDescription('');
+    setNewDeckColor('bg-blue-500');
+    setShowCreateForm(false);
+  };
+
+  const colorOptions = [
+    'bg-blue-500',
+    'bg-green-500',
+    'bg-purple-500',
+    'bg-red-500',
+    'bg-yellow-500',
+    'bg-indigo-500',
+    'bg-pink-500',
+    'bg-gray-500',
+  ];
 
   const startRename = (deck: Deck) => {
     setEditingDeck(deck.id);
@@ -133,7 +171,93 @@ export function HomePage({ decks, cards, onUpdateDeck, onDeleteDeck }: HomePageP
 
       {/* Decks Grid */}
       <div className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Your Decks</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-gray-900">Your Decks</h2>
+          <button
+            onClick={() => setShowCreateForm(true)}
+            className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center justify-center"
+            title="Add new deck"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Create Deck Form */}
+        {showCreateForm && (
+          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Create New Deck</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="deck-name" className="block text-sm font-medium text-gray-700 mb-1">
+                  Deck Name
+                </label>
+                <input
+                  id="deck-name"
+                  type="text"
+                  value={newDeckName}
+                  onChange={(e) => setNewDeckName(e.target.value)}
+                  placeholder="Enter deck name"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="deck-description" className="block text-sm font-medium text-gray-700 mb-1">
+                  Description (optional)
+                </label>
+                <textarea
+                  id="deck-description"
+                  value={newDeckDescription}
+                  onChange={(e) => setNewDeckDescription(e.target.value)}
+                  placeholder="Enter deck description"
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Color
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {colorOptions.map((color) => (
+                    <button
+                      key={color}
+                      onClick={() => setNewDeckColor(color)}
+                      className={`w-8 h-8 rounded-full ${color} border-2 ${
+                        newDeckColor === color ? 'border-gray-800' : 'border-gray-300'
+                      } hover:border-gray-600 transition-colors`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={cancelCreateDeck}
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCreateDeck}
+                disabled={!newDeckName.trim()}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  newDeckName.trim()
+                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                Create Deck
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {decks.map((deck) => {
             const reviewCount = getReviewCountForDeck(deck.id);

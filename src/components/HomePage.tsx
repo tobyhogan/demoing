@@ -38,6 +38,7 @@ export function HomePage({ decks, cards }: HomePageProps) {
       <div className="mb-8">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/*
           <button
             onClick={() => navigate('/add-card')}
             className="p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors text-left"
@@ -46,6 +47,7 @@ export function HomePage({ decks, cards }: HomePageProps) {
             <h3 className="font-semibold text-gray-900 mb-1">Add New Card</h3>
             <p className="text-gray-600 text-sm">Create a new flashcard for any deck</p>
           </button>
+          */}
           
           <button
             onClick={() => navigate('/create-deck')}
@@ -125,7 +127,7 @@ export function HomePage({ decks, cards }: HomePageProps) {
                       onClick={() => navigate(`/decks/${deckSlug}`)}
                       className="w-full py-2 px-4 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
                     >
-                      View Cards ({totalCards})
+                      View Deck ({totalCards})
                     </button>
                   </div>
                 </div>

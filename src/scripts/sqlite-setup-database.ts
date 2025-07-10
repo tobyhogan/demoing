@@ -14,26 +14,17 @@ async function setupDatabase() {
     const schema = fs.readFileSync(schemaPath, 'utf8');
     
     console.log('Creating tables...');
-    // Split schema by statements and execute them
-    const statements = schema.split(';').filter(stmt => stmt.trim());
-    for (const statement of statements) {
-      if (statement.trim()) {
-        await db.run(statement);
-      }
-    }
+    // Execute the entire schema at once using exec
+    const database = await db.connect();
+    database.exec(schema);
     
     // Read and execute seed data
     const seedPath = path.join(process.cwd(), 'database', 'sqlite-seed.sql');
     const seedData = fs.readFileSync(seedPath, 'utf8');
     
     console.log('Inserting seed data...');
-    // Split seed data by statements and execute them
-    const seedStatements = seedData.split(';').filter(stmt => stmt.trim());
-    for (const statement of seedStatements) {
-      if (statement.trim()) {
-        await db.run(statement);
-      }
-    }
+    // Execute the entire seed data at once using exec
+    database.exec(seedData);
     
     console.log('Database setup completed successfully!');
   } catch (error) {

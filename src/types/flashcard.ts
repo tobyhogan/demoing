@@ -3,7 +3,7 @@ export interface Flashcard {
   front: string;
   back: string;
   difficulty: number; // 0-3 (higher = easier)
-  nextReview: Date;
+  nextReview: Date | string; // Date object or ISO string from database
   interval: number; // days until next review
   repetitions: number;
   easeFactor: number;

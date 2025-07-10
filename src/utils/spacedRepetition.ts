@@ -49,7 +49,10 @@ export function updateCardAfterReview(card: Flashcard, difficulty: DifficultyLev
 
 export function getCardsToReview(cards: Flashcard[]): Flashcard[] {
   const now = new Date();
-  return cards.filter(card => card.nextReview <= now);
+  return cards.filter(card => {
+    const cardNextReview = typeof card.nextReview === 'string' ? new Date(card.nextReview) : card.nextReview;
+    return cardNextReview <= now;
+  });
 }
 
 export function createNewDeck(name: string, description: string, color: string): { id: string; name: string; description: string; color: string; cardCount: number } {

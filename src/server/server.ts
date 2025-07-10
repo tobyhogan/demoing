@@ -44,11 +44,11 @@ app.post('/api/decks', async (req, res) => {
   try {
     const { name, description, color } = req.body;
     
-    if (!name || !description || !color) {
-      return res.status(400).json({ error: 'Name, description, and color are required' });
+    if (!name || !color) {
+      return res.status(400).json({ error: 'Name and color are required' });
     }
     
-    const deck = await DeckService.createDeck(name, description, color);
+    const deck = await DeckService.createDeck(name, description || '', color);
     res.status(201).json(deck);
   } catch (error) {
     console.error('Error creating deck:', error);

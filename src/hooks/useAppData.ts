@@ -2,14 +2,12 @@ import { useState, useEffect, useCallback } from 'react';
 import type { Deck, Flashcard } from '../types/flashcard';
 import { deckApi, cardApi } from '../lib/api';
 import { createSlug, findDeckBySlug } from '../utils/urlUtils';
-import { sampleDecks, sampleFlashcards } from '../data/sampleCards';
 
 export interface AppState {
   decks: Deck[];
   cards: Flashcard[];
   loading: boolean;
   error: string | null;
-  isOffline: boolean; // Flag to indicate if we're using fallback data
 }
 
 export function useAppData() {
@@ -18,7 +16,6 @@ export function useAppData() {
     cards: [],
     loading: true,
     error: null,
-    isOffline: false,
   });
 
   // Load initial data
@@ -36,19 +33,15 @@ export function useAppData() {
         cards,
         loading: false,
         error: null,
-        isOffline: false,
       });
     } catch (error) {
-      console.error('API not available, falling back to sample data:', error);
+      console.error('Failed to load data from API:', error);
       
-      // Fall back to sample data if API is not available
-      setState({
-        decks: sampleDecks,
-        cards: sampleFlashcards,
+      setState(prev => ({
+        ...prev,
         loading: false,
-        error: null,
-        isOffline: true,
-      });
+        error: `Failed to connect to server. Please make sure the server is running on port 3001.`,
+      }));
     }
   }, []);
 
@@ -58,22 +51,6 @@ export function useAppData() {
 
   // Deck operations
   const createDeck = useCallback(async (name: string, description: string, color: string) => {
-    if (state.isOffline) {
-      // In offline mode, create a temporary deck with a random ID
-      const newDeck: Deck = {
-        id: Math.random().toString(36).substr(2, 9),
-        name,
-        description,
-        color,
-        cardCount: 0,
-      };
-      setState(prev => ({
-        ...prev,
-        decks: [...prev.decks, newDeck],
-      }));
-      return newDeck;
-    }
-
     try {
       const newDeck = await deckApi.create(name, description, color);
       setState(prev => ({
@@ -85,7 +62,7 @@ export function useAppData() {
       console.error('Error creating deck:', error);
       throw error;
     }
-  }, [state.isOffline]);
+  }, []);
 
   const updateDeck = useCallback(async (id: string, updates: Partial<Omit<Deck, 'id' | 'cardCount'>>) => {
     try {
@@ -117,31 +94,6 @@ export function useAppData() {
 
   // Card operations
   const createCard = useCallback(async (deckId: string, front: string, back: string) => {
-    if (state.isOffline) {
-      // In offline mode, create a temporary card with a random ID
-      const newCard: Flashcard = {
-        id: Math.random().toString(36).substr(2, 9),
-        deckId,
-        front,
-        back,
-        difficulty: 0,
-        nextReview: new Date(),
-        interval: 0,
-        repetitions: 0,
-        easeFactor: 2.5,
-      };
-      setState(prev => ({
-        ...prev,
-        cards: [...prev.cards, newCard],
-        decks: prev.decks.map(deck => 
-          deck.id === deckId 
-            ? { ...deck, cardCount: deck.cardCount + 1 }
-            : deck
-        ),
-      }));
-      return newCard;
-    }
-
     try {
       const newCard = await cardApi.create(deckId, front, back);
       setState(prev => ({
@@ -158,21 +110,9 @@ export function useAppData() {
       console.error('Error creating card:', error);
       throw error;
     }
-  }, [state.isOffline]);
+  }, []);
 
   const updateCard = useCallback(async (id: string, updates: Partial<Omit<Flashcard, 'id' | 'deckId'>>) => {
-    if (state.isOffline) {
-      // In offline mode, update the card in local state
-      setState(prev => ({
-        ...prev,
-        cards: prev.cards.map(card => 
-          card.id === id ? { ...card, ...updates } : card
-        ),
-      }));
-      const updatedCard = state.cards.find(card => card.id === id);
-      return updatedCard ? { ...updatedCard, ...updates } : null;
-    }
-
     try {
       const updatedCard = await cardApi.update(id, updates);
       setState(prev => ({
@@ -184,7 +124,7 @@ export function useAppData() {
       console.error('Error updating card:', error);
       throw error;
     }
-  }, [state.isOffline, state.cards]);
+  }, []);
 
   const deleteCard = useCallback(async (id: string) => {
     try {

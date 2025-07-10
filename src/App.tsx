@@ -13,10 +13,11 @@ function App() {
     cards,
     loading,
     error,
-    isOffline,
     createCard,
     createDeck,
     updateCard,
+    updateDeck,
+    deleteDeck,
     navigateToStudy,
   } = useAppData();
 
@@ -110,13 +111,6 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Offline notification banner */}
-      {isOffline && (
-        <div className="bg-yellow-500 text-white px-4 py-2 text-center">
-          ⚠️ Running in offline mode with sample data. Database connection not available.
-        </div>
-      )}
-      
       <Router>
         <Routes>
           <Route 
@@ -125,6 +119,8 @@ function App() {
               <HomePage
                 decks={decks}
                 cards={cards}
+                onUpdateDeck={updateDeck}
+                onDeleteDeck={deleteDeck}
               />
             } 
           />
